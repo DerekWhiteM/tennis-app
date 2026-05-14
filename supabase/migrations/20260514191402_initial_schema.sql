@@ -35,7 +35,7 @@ create table public.match_proposals (
   id uuid default gen_random_uuid() primary key,
   creator_id uuid references public.profiles(id) on delete cascade not null,
   proposed_time timestamp with time zone not null,
-  location geography(POINT) not null, 
+  location extensions.geography(POINT) not null, 
   radius_meters integer default 8050 not null,
   match_format text check (match_format in ('best_of_3', 'best_of_5', 'pro_set')) default 'best_of_3',
   status text check (status in ('open', 'accepted', 'canceled')) default 'open',
