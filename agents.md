@@ -1,9 +1,28 @@
+## Application Overview
+This is a tennis matchmaking app. Users may post match proposals for a specified time within a radius. Other users can browse proposals within a radius. When a user accepts a proposal, the two players are put into a message thread to plan the details of their session. Users can also post match results which requires the opponent to verify the result before it is made official. Elo ratings for players are updated as match results are verified.
+
+---
+
 ## Tech Stack
 - Language: TypeScript
 - Framework: SvelteKit (Svelte 5)
 - Database: PostgreSQL (Supabase)
 - CSS: Tailwind
 - Auth: Supabase
+
+---
+
+## Routes
+
+- /
+- /auth/callback
+- /dashboard
+    - actions:
+        - logout
+- /login
+    - actions:
+        - login
+        - signup
 
 ---
 
