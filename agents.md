@@ -13,7 +13,7 @@ This is a tennis matchmaking app. Users may post match proposals for a specified
 ---
 
 ## Development Roadmap
-- [ ] User Onboarding
+- [x] User Onboarding
 - [ ] Profile Management
 - [ ] Posting Match Proposals
 - [ ] Browsing Match Proposals
@@ -30,6 +30,7 @@ This is a tennis matchmaking app. Users may post match proposals for a specified
 - /dashboard
     - actions:
         - logout
+- /onboarding
 - /login
     - actions:
         - login
