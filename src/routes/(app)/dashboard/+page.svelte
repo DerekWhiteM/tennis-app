@@ -29,6 +29,12 @@
             <!-- Header Actions -->
             <div class="flex items-center gap-4">
                 <a
+                    href="/proposals/new"
+                    class="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
+                >
+                    New Proposal
+                </a>
+                <a
                     href="/profile"
                     class="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
                 >

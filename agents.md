@@ -15,7 +15,7 @@ This is a tennis matchmaking app. Users may post match proposals for a specified
 ## Development Roadmap
 - [x] User Onboarding
 - [x] Profile Management
-- [ ] Posting Match Proposals
+- [x] Posting Match Proposals
 - [ ] Browsing Match Proposals
 - [ ] Acceptance & Real-Time Messaging
 - [ ] Reporting Match Results
@@ -37,6 +37,9 @@ This is a tennis matchmaking app. Users may post match proposals for a specified
             - logout
     - /onboarding
     - /profile
+    - /proposals/new
+        - actions:
+            - create
 
 ---
 
@@ -77,14 +80,20 @@ create trigger on_auth_user_created
 -- 2. MATCH PROPOSALS
 -- ==========================================
 create table public.match_proposals (
-  id uuid default gen_random_uuid() primary key,
-  creator_id uuid references public.profiles(id) on delete cascade not null,
-  proposed_time timestamp with time zone not null,
-  location extensions.geography(POINT) not null, 
-  radius_meters integer default 8050 not null,
-  match_format text check (match_format in ('best_of_3', 'best_of_5', 'pro_set')) default 'best_of_3',
-  status text check (status in ('open', 'accepted', 'canceled')) default 'open',
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+    id uuid default gen_random_uuid() primary key,
+    creator_id uuid references public.profiles(id) on delete cascade not null,
+    proposed_time timestamp with time zone not null,
+    location extensions.geography(POINT) not null, 
+    radius_meters integer default 8050 not null,
+    match_format text check (match_format in ('best_of_3', 'best_of_5', 'pro_set')) default 'best_of_3',
+    target_gender text check (target_gender in ('male', 'female', 'any')) default 'any',
+    min_ntrp numeric(2,1) check (min_ntrp >= 1.0 and min_ntrp <= 7.0) default 1.0,
+    max_ntrp numeric(2,1) check (max_ntrp >= 1.0 and max_ntrp <= 7.0) default 7.0,
+    status text check (status in ('open', 'accepted', 'canceled')) default 'open',
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+    
+    -- Ensure max is always greater than or equal to min
+    check (max_ntrp >= min_ntrp)
 );
 
 -- ==========================================
