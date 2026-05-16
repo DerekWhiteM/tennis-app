@@ -27,14 +27,16 @@ This is a tennis matchmaking app. Users may post match proposals for a specified
 
 - /
 - /auth/callback
-- /dashboard
-    - actions:
-        - logout
-- /onboarding
 - /login
     - actions:
         - login
         - signup
+- /(app)
+    - /dashboard
+        - actions:
+            - logout
+    - /onboarding
+    - /profile
 
 ---
 
