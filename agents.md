@@ -14,7 +14,7 @@ This is a tennis matchmaking app. Users may post match proposals for a specified
 
 ## Development Roadmap
 - [x] User Onboarding
-- [ ] Profile Management
+- [x] Profile Management
 - [ ] Posting Match Proposals
 - [ ] Browsing Match Proposals
 - [ ] Acceptance & Real-Time Messaging
