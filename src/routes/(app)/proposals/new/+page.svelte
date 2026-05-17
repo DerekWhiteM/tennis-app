@@ -1,12 +1,6 @@
 <script lang="ts">
+    import LocationPicker from "$lib/components/LocationPicker.svelte";
     import { enhance } from "$app/forms";
-    import { onMount } from "svelte";
-    import type {
-        Map as LeafletMap,
-        Marker,
-        Circle,
-        DivIcon as LeafletDivIcon,
-    } from "leaflet";
 
     // Svelte 5 Runes for reactive state
     let lat = $state(35.5859);
@@ -15,89 +9,15 @@
 
     // Derived state for the database (1 mile ≈ 1609.34 meters)
     let radiusMeters = $derived(Math.round(radiusMiles * 1609.34));
-
-    let mapElement: HTMLElement;
-    let map: LeafletMap;
-    let marker: Marker;
-    let radiusCircle: Circle;
-    let customPinIcon: LeafletDivIcon;
-
-    onMount(async () => {
-        const L = await import("leaflet");
-        await import("leaflet/dist/leaflet.css");
-
-        // Create a custom SVG pin icon with emerald styling via Tailwind
-        // We create a DivIcon that contains our SVG markup.
-        customPinIcon = L.divIcon({
-            html: `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-emerald-600 stroke-emerald-700 w-10 h-10 drop-shadow-md">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-            </svg>
-          `,
-            className: "bg-transparent", // Added this just to ensure no weird default borders appear
-            iconSize: [40, 40], // 40x40 perfectly matches Tailwind's w-10 h-10
-            iconAnchor: [20, 40], // Anchors the bottom-middle of the pin to the precise coordinate
-        });
-
-        // Initialize map
-        map = L.map(mapElement).setView([lat, lng], 11); // Zoomed out to see the radius
-
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: "&copy; OpenStreetMap contributors",
-        }).addTo(map);
-
-        // Add draggable marker with our custom emerald icon
-        marker = L.marker([lat, lng], {
-            draggable: true,
-            icon: customPinIcon,
-        }).addTo(map);
-
-        // Add the visual radius circle (emerald tinted)
-        radiusCircle = L.circle([lat, lng], {
-            color: "#10b981", // Tailwind emerald-500
-            fillColor: "#10b981",
-            fillOpacity: 0.15,
-            weight: 2,
-            radius: radiusMeters,
-        }).addTo(map);
-
-        // Update coordinates when marker is dragged
-        marker.on("dragend", () => {
-            const position = marker.getLatLng();
-            lat = position.lat;
-            lng = position.lng;
-        });
-
-        // Move marker and update coordinates when map is clicked
-        map.on("click", (e) => {
-            lat = e.latlng.lat;
-            lng = e.latlng.lng;
-            marker.setLatLng([lat, lng]);
-        });
-    });
-
-    // Reactively update the Leaflet circle when inputs change
-    $effect(() => {
-        // 1. Read dependencies first so Svelte 5 tracks them
-        const currentLat = lat;
-        const currentLng = lng;
-        const currentRadius = radiusMeters;
-
-        // 2. Execute the Leaflet updates only if the map objects are ready
-        if (radiusCircle && marker) {
-            radiusCircle.setLatLng([currentLat, currentLng]);
-            radiusCircle.setRadius(currentRadius);
-        }
-    });
 </script>
 
-<div class="min-h-screen bg-gray-50 p-8">
+<div class="bg-gray-50">
     <div
-        class="max-w-2xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-8"
+        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
     >
         <div class="border-b border-gray-100 pb-6 mb-6">
-            <h1 class="text-3xl font-extrabold text-gray-900">
-                Post a Match Proposal
+            <h1 class="text-2xl font-bold text-gray-900">
+                New Match Proposal
             </h1>
             <p class="mt-2 text-sm text-gray-600">
                 Set your terms, drop a pin, and find an opponent.
@@ -123,23 +43,17 @@
 
             <!-- Map Container -->
             <div>
-                <div class="flex justify-between items-end mb-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                        >Match Location</label
-                    >
-                    <span class="text-sm font-semibold text-emerald-600"
-                        >{radiusMiles} mile radius</span
-                    >
-                </div>
+                <label class="mb-2 block text-sm font-medium text-gray-700"
+                    >Match Location</label
+                >
                 <p class="text-xs text-gray-500 mb-2">
                     Drag the pin or click on the map to set the exact location.
                 </p>
 
-                <!-- The map binds to this div -->
-                <div
-                    bind:this={mapElement}
-                    class="h-80 w-full rounded-md border border-gray-300 shadow-sm z-0 relative mb-4"
-                ></div>
+                <!-- Location Picker -->
+                <div class="mb-4">
+                    <LocationPicker bind:lat bind:lng bind:radiusMiles />
+                </div>
 
                 <!-- Hidden inputs for coordinates -->
                 <input type="hidden" name="latitude" value={lat} />
@@ -149,25 +63,6 @@
                     name="radius_meters"
                     value={radiusMeters}
                 />
-
-                <!-- Radius Slider -->
-                <div class="px-2">
-                    <input
-                        type="range"
-                        id="radiusMiles"
-                        min="0"
-                        max="10"
-                        step="1"
-                        bind:value={radiusMiles}
-                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-                    />
-                    <div
-                        class="flex justify-between text-xs text-gray-400 mt-1"
-                    >
-                        <span>0 mi</span>
-                        <span>10 mi</span>
-                    </div>
-                </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">

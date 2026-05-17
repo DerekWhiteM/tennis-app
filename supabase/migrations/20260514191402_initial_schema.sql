@@ -110,3 +110,81 @@ create table public.messages (
   content text not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- ==========================================
+-- 7. (FUNCTION) BROWSE_MATCH_PROPOSALS
+-- ==========================================
+create or replace function public.browse_match_proposals(
+  user_lon double precision,
+  user_lat double precision,
+  search_radius_meters integer,
+  filter_gender text default 'all',
+  filter_min_ntrp numeric default 1.0,
+  filter_max_ntrp numeric default 7.0,
+  filter_start_date text default null,
+  filter_end_date text default null,
+  searcher_gender text default 'any',    -- NEW
+  searcher_ntrp numeric default 0.0      -- NEW
+)
+returns table (
+  id uuid,
+  creator_id uuid,
+  creator_username text,
+  creator_ntrp numeric,
+  creator_elo integer,
+  creator_gender text,
+  proposed_time timestamp with time zone,
+  match_format text,
+  target_gender text,
+  min_ntrp numeric,
+  max_ntrp numeric,
+  distance_meters double precision
+) as $$
+begin
+  return query
+  select 
+    mp.id,
+    mp.creator_id,
+    p.username as creator_username,
+    p.ntrp_rating as creator_ntrp,
+    p.elo_rating as creator_elo,
+    p.gender as creator_gender,
+    mp.proposed_time,
+    mp.match_format,
+    mp.target_gender,
+    mp.min_ntrp,
+    mp.max_ntrp,
+    st_distance(
+      mp.location, 
+      st_setsrid(st_point(user_lon, user_lat), 4326)::extensions.geography
+    ) as distance_meters
+  from public.match_proposals mp
+  join public.profiles p on mp.creator_id = p.id
+  where 
+    mp.status = 'open'
+    
+    -- 1. RADIUS INTERSECTION
+    -- The distance between you and the proposal must be less than or equal to 
+    -- your search radius PLUS the proposal's radius.
+    -- (COALESCE is used just in case older test data is missing the radius_meters column)
+    and st_dwithin(
+      mp.location, 
+      st_setsrid(st_point(user_lon, user_lat), 4326)::extensions.geography, 
+      search_radius_meters + coalesce(mp.radius_meters, 8046.72) 
+    )
+    
+    -- 2. SEARCHER filtering the CREATOR'S Profile
+    and (filter_gender = 'all' or p.gender = filter_gender)
+    and (p.ntrp_rating >= filter_min_ntrp and p.ntrp_rating <= filter_max_ntrp)
+    
+    -- 3. CREATOR filtering the SEARCHER'S Profile
+    and (mp.target_gender = 'any' or mp.target_gender = searcher_gender)
+    and (searcher_ntrp >= mp.min_ntrp and searcher_ntrp <= mp.max_ntrp)
+    
+    -- 4. DATE FILTERS
+    and (filter_start_date is null or filter_start_date = '' or mp.proposed_time >= filter_start_date::timestamp with time zone)
+    and (filter_end_date is null or filter_end_date = '' or mp.proposed_time < (filter_end_date::date + interval '1 day'))
+    
+  order by distance_meters asc;
+end;
+$$ language plpgsql security definer;

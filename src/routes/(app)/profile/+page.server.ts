@@ -4,11 +4,6 @@ import type { PageServerLoad, Actions } from './$types';
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
     const { session } = await safeGetSession();
     
-    // Fallback protection in case your (app)/+layout.server.ts doesn't catch it
-    if (!session) {
-        redirect(303, '/login');
-    }
-
     const { data: profile, error } = await supabase
         .from('profiles')
         .select('username, gender, ntrp_rating, elo_rating, matches_played')

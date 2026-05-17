@@ -9,13 +9,13 @@
     let profile = $derived(data.profile);
 </script>
 
-<div class="min-h-screen bg-gray-50 p-8">
+<div class="bg-gray-50">
     <div
-        class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-8"
+        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
     >
         <!-- Header -->
         <div class="border-b border-gray-100 pb-6 mb-6">
-            <h1 class="text-3xl font-extrabold text-gray-900">
+            <h1 class="text-2xl font-bold text-gray-900">
                 Player Profile
             </h1>
             <p class="mt-2 text-sm text-gray-600">

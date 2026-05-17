@@ -1,14 +1,14 @@
 // src/routes/(app)/+layout.server.ts
 import { redirect } from "@sveltejs/kit";
-import type { LayoutServerLoad } from "../$types";
+import type { LayoutServerLoad } from "./$types";
 
 export const load: LayoutServerLoad = async ({
     locals: { supabase, safeGetSession },
     url,
 }) => {
-    const { session } = await safeGetSession();
+    const { session, user } = await safeGetSession();
 
-    if (!session) {
+    if (!session || !user) {
         throw redirect(303, "/login");
     }
 
@@ -33,7 +33,8 @@ export const load: LayoutServerLoad = async ({
     }
 
     return {
-        session,
+        user,
         profile,
+        session,
     };
 };

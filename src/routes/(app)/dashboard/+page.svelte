@@ -1,56 +1,18 @@
 <script lang="ts">
-    import { enhance } from "$app/forms";
+    
     import type { PageData } from "./$types";
 
     // Svelte 5 syntax to receive the data from +page.server.ts
     let { data }: { data: PageData } = $props();
 </script>
 
-<div class="min-h-screen bg-gray-50 p-8">
+<div class="bg-gray-50">
     <div
-        class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-8"
+        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
     >
         <!-- Dashboard Header -->
-        <div
-            class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-100 pb-6 mb-6 gap-4"
-        >
-            <div>
-                <h1 class="text-3xl font-extrabold text-gray-900">
-                    Player Dashboard
-                </h1>
-                <p class="mt-2 text-sm text-gray-600">
-                    Welcome to the court, <span
-                        class="font-semibold text-emerald-700"
-                        >{data.user?.email}</span
-                    >!
-                </p>
-            </div>
-
-            <!-- Header Actions -->
-            <div class="flex items-center gap-4">
-                <a
-                    href="/proposals/new"
-                    class="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
-                >
-                    New Proposal
-                </a>
-                <a
-                    href="/profile"
-                    class="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
-                >
-                    Edit Profile
-                </a>
-
-                <!-- Logout Form -->
-                <form method="POST" action="?/logout" use:enhance>
-                    <button
-                        type="submit"
-                        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
-                    >
-                        Log Out
-                    </button>
-                </form>
-            </div>
+        <div class="border-b border-gray-100 pb-6 mb-6 gap-4">
+            <h1 class="text-2xl font-bold text-gray-900">Match Schedule</h1>
         </div>
 
         <!-- Main Content Area -->

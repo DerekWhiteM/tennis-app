@@ -4,9 +4,6 @@ import type { Actions } from './$types';
 export const actions: Actions = {
   create: async ({ request, locals: { supabase, safeGetSession } }) => {
     const session = await safeGetSession();
-    if (!session) {
-      throw redirect(303, '/login');
-    }
 
     const formData = await request.formData();
     
