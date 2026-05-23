@@ -19,13 +19,13 @@
 </script>
 
 <div
-    class="bg-white flex flex-col rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+    class="flex flex-col overflow-hidden"
 >
     <!-- Header: Opponent & Match Context -->
     <div
-        class="bg-gray-50 border-b border-gray-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+        class="border-b border-gray-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
     >
-        <div>
+        <div class="flex items-center gap-4">
             <h1 class="text-lg font-bold text-gray-900">
                 {data.opponent?.username || "Unknown Player"}
             </h1>
@@ -45,7 +45,7 @@
 
         {#if data.match}
             <div
-                class="text-sm text-gray-600 bg-white border border-gray-200 px-3 py-2 rounded-md shadow-sm flex items-center gap-2"
+                class="text-sm text-gray-600 flex items-center gap-2"
             >
                 <span>📅</span>
                 <span class="font-medium">
@@ -77,7 +77,7 @@
     <!-- Message List -->
     <div
         bind:this={chatContainer}
-        class="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/30"
+        class="flex-1 overflow-y-auto p-6 space-y-6"
     >
         {#if data.messages.length === 0}
             <div

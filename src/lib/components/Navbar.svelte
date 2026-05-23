@@ -20,6 +20,12 @@
             Proposals
         </a>
         <a
+            href="/threads"
+            class="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
+        >
+            Threads
+        </a>
+        <a
             href="/profile"
             class="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
         >
