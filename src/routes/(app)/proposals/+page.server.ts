@@ -131,7 +131,6 @@ export const actions = {
         const { data: match, error: matchError } = await supabase
             .from('matches')
             .insert({
-                proposal_id: proposalId,
                 player1_id: proposal.creator_id,
                 player2_id: session.user.id,
                 match_time: proposal.proposed_time,

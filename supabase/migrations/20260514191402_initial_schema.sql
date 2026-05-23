@@ -53,7 +53,6 @@ create table public.match_proposals (
 -- ==========================================
 create table public.matches (
   id uuid default gen_random_uuid() primary key,
-  proposal_id uuid references public.match_proposals(id) on delete set null,
   player1_id uuid references public.profiles(id) not null,
   player2_id uuid references public.profiles(id) not null,
   match_time timestamp with time zone not null,
@@ -61,6 +60,7 @@ create table public.matches (
 
   -- Structured Score: Array of objects [{p1_games: 6, p2_games: 4, p1_tiebreak: null, ...}]
   score_json jsonb,
+  reporter_id uuid references public.profiles(id) check (reporter_id = player1_id or reporter_id = player2_id),
   winner_id uuid references public.profiles(id),
   status text check (status in ('scheduled', 'played', 'verified', 'disputed')) default 'scheduled',
 
