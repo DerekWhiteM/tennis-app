@@ -17,7 +17,7 @@ This is a tennis matchmaking app. Users may post match proposals for a specified
 - [x] Profile Management
 - [x] Posting Match Proposals
 - [x] Browsing Match Proposals
-- [ ] Acceptance & Real-Time Messaging
+- [x] Acceptance & Real-Time Messaging
 - [ ] Reporting Match Results
 - [ ] Elo Calculation
 
