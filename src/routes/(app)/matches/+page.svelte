@@ -6,15 +6,11 @@
         data.matches.filter(m => m.status === 'played' && m.reporter_id !== data.session?.user?.id)
     );
     
-    let pendingOpponent = $derived(
-        data.matches.filter(m => m.status === 'played' && m.reporter_id === data.session?.user?.id)
-    );
-
     let verifiedHistory = $derived(
         data.matches.filter(m => m.status === 'verified')
     );
 
-    function getOpponent(match) {
+    function getOpponent(match: any) {
         return match.player1_id === data.session?.user?.id ? match.player2 : match.player1;
     }
 </script>
@@ -66,7 +62,7 @@
             <p class="text-sm mt-1">Once an opponent verifies a score, it will appear here.</p>
         </div>
     {:else}
-        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+        <div class="overflow-hidden border border-gray-300 sm:rounded-lg">
             <table class="min-w-full divide-y divide-gray-300">
                 <thead class="bg-gray-50">
                     <tr>
