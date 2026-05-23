@@ -1,4 +1,5 @@
 import type { PageServerLoad } from "./$types";
+import { fail, redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
     // Parse UI parameters from URL query strings
@@ -79,4 +80,97 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
             endDate,
         },
     };
+};
+
+export const actions = {
+    accept: async ({ request, locals: { supabase, safeGetSession } }) => {
+        const { session } = await safeGetSession();
+        
+        if (!session?.user) {
+            redirect(303, '/login');
+        }
+
+        const formData = await request.formData();
+        const proposalId = formData.get('proposal_id')?.toString();
+
+        if (!proposalId) {
+            return fail(400, { error: 'Proposal ID is required' });
+        }
+
+        // 1. Fetch the proposal to ensure it is valid and open
+        const { data: proposal, error: fetchError } = await supabase
+            .from('match_proposals')
+            .select('*')
+            .eq('id', proposalId)
+            .single();
+
+        if (fetchError || !proposal) {
+            return fail(404, { error: 'Proposal not found.' });
+        }
+
+        if (proposal.status !== 'open') {
+            return fail(400, { error: 'This proposal is no longer available.' });
+        }
+
+        if (proposal.creator_id === session.user.id) {
+            return fail(400, { error: 'You cannot accept your own proposal.' });
+        }
+
+        // 2. Mark proposal as accepted (Optimistic concurrency check included)
+        const { error: updateError } = await supabase
+            .from('match_proposals')
+            .update({ status: 'accepted' })
+            .eq('id', proposalId)
+            .eq('status', 'open');
+
+        if (updateError) {
+            return fail(500, { error: 'Failed to accept the proposal. Someone else may have accepted it.' });
+        }
+
+        // 3. Create the Match record
+        const { data: match, error: matchError } = await supabase
+            .from('matches')
+            .insert({
+                proposal_id: proposalId,
+                player1_id: proposal.creator_id,
+                player2_id: session.user.id,
+                match_time: proposal.proposed_time,
+                match_format: proposal.match_format,
+                status: 'scheduled'
+            })
+            .select('id')
+            .single();
+
+        if (matchError || !match) {
+            return fail(500, { error: 'Failed to generate match record.' });
+        }
+
+        // 4. Create the conversation Thread
+        const { data: thread, error: threadError } = await supabase
+            .from('threads')
+            .insert({
+                match_id: match.id
+            })
+            .select('id')
+            .single();
+
+        if (threadError || !thread) {
+            return fail(500, { error: 'Failed to create message thread.' });
+        }
+
+        // 5. Add both players to the Thread Participants
+        const { error: participantsError } = await supabase
+            .from('thread_participants')
+            .insert([
+                { thread_id: thread.id, profile_id: proposal.creator_id },
+                { thread_id: thread.id, profile_id: session.user.id }
+            ]);
+
+        if (participantsError) {
+            return fail(500, { error: 'Failed to add users to the message thread.' });
+        }
+
+        // 6. Redirect the user directly into their new messaging thread
+        redirect(303, `/threads/${thread.id}`);
+    }
 };

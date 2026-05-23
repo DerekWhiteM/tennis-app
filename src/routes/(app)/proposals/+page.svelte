@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import { enhance } from "$app/forms";
     import LocationPicker from "$lib/components/LocationPicker.svelte";
 
     let { data } = $props();
@@ -381,15 +382,20 @@
                             </div>
 
                             <div class="mt-6">
-                                <button
-                                    class="w-full text-center bg-gray-900 hover:bg-emerald-600 text-white font-medium text-sm py-2 px-4 rounded-md transition-colors shadow-sm"
-                                    onclick={() =>
-                                        alert(
-                                            "Accepting proposal... Route next!",
-                                        )}
-                                >
-                                    Accept Proposal
-                                </button>
+                                <form method="POST" action="?/accept" use:enhance={() => {
+                                    // You can set a loading state here if you'd like
+                                    return async ({ update }) => {
+                                        await update();
+                                    };
+                                }}>
+                                    <input type="hidden" name="proposal_id" value={prop.id} />
+                                    <button
+                                        type="submit"
+                                        class="w-full text-center bg-gray-900 hover:bg-emerald-600 text-white font-medium text-sm py-2 px-4 rounded-md transition-colors shadow-sm"
+                                    >
+                                        Accept Proposal
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     {/each}
