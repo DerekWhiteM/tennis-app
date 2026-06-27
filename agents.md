@@ -101,7 +101,6 @@ create table public.match_proposals (
 -- ==========================================
 create table public.matches (
   id uuid default gen_random_uuid() primary key,
-  proposal_id uuid references public.match_proposals(id) on delete set null,
   player1_id uuid references public.profiles(id) not null,
   player2_id uuid references public.profiles(id) not null,
   match_time timestamp with time zone not null,
@@ -109,6 +108,7 @@ create table public.matches (
 
   -- Structured Score: Array of objects [{p1_games: 6, p2_games: 4, p1_tiebreak: null, ...}]
   score_json jsonb,
+  reporter_id uuid references public.profiles(id) check (reporter_id = player1_id or reporter_id = player2_id),
   winner_id uuid references public.profiles(id),
   status text check (status in ('scheduled', 'played', 'verified', 'disputed')) default 'scheduled',
 
@@ -236,6 +236,84 @@ begin
   order by distance_meters asc;
 end;
 $$ language plpgsql security definer;
+
+-- ==========================================
+-- 8. ELO CALCULATION FUNCTION & TRIGGER
+-- ==========================================
+create or replace function public.process_verified_match()
+returns trigger as $$
+declare
+  p1_rating integer;
+  p2_rating integer;
+  p1_matches integer;
+  p2_matches integer;
+  
+  expected_p1 numeric;
+  expected_p2 numeric;
+  score_p1 numeric;
+  score_p2 numeric;
+  
+  -- The K-Factor determines the max points won/lost. 
+  -- 32 is standard for new players, you could dynamically lower this as matches_played increases.
+  k_factor integer := 32; 
+  
+  new_p1_rating integer;
+  new_p2_rating integer;
+begin
+  -- Only process when the match status transitions exactly to 'verified'
+  if new.status = 'verified' and old.status != 'verified' then
+    
+    -- 1. Fetch current profiles
+    select elo_rating, matches_played into p1_rating, p1_matches 
+    from public.profiles where id = new.player1_id;
+    
+    select elo_rating, matches_played into p2_rating, p2_matches 
+    from public.profiles where id = new.player2_id;
+
+    -- 2. Determine match outcome based on winner_id
+    if new.winner_id = new.player1_id then
+      score_p1 := 1.0;
+      score_p2 := 0.0;
+    elsif new.winner_id = new.player2_id then
+      score_p1 := 0.0;
+      score_p2 := 1.0;
+    else
+      -- Fallback for unhandled states, shouldn't happen in tennis
+      score_p1 := 0.5;
+      score_p2 := 0.5;
+    end if;
+
+    -- 3. Calculate Expected Win Probabilities (using float division)
+    expected_p1 := 1.0 / (1.0 + power(10.0, (p2_rating - p1_rating) / 400.0));
+    expected_p2 := 1.0 / (1.0 + power(10.0, (p1_rating - p2_rating) / 400.0));
+
+    -- 4. Calculate New Ratings
+    new_p1_rating := round(p1_rating + k_factor * (score_p1 - expected_p1));
+    new_p2_rating := round(p2_rating + k_factor * (score_p2 - expected_p2));
+
+    -- 5. Update Profiles with new ratings and increment match counts
+    update public.profiles
+    set elo_rating = new_p1_rating,
+        matches_played = p1_matches + 1
+    where id = new.player1_id;
+
+    update public.profiles
+    set elo_rating = new_p2_rating,
+        matches_played = p2_matches + 1
+    where id = new.player2_id;
+    
+  end if;
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+-- Bind the trigger to the matches table
+drop trigger if exists on_match_verified on public.matches;
+create trigger on_match_verified
+  after update of status on public.matches
+  for each row
+  execute procedure public.process_verified_match();
 ~~~
 
 ---
