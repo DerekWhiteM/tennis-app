@@ -13,6 +13,7 @@ create table public.profiles (
   matches_played integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.profiles TO authenticated;
 
 -- Automate profile creation
 create function public.handle_new_user()
@@ -47,6 +48,7 @@ create table public.match_proposals (
     -- Ensure max is always greater than or equal to min
     check (max_ntrp >= min_ntrp)
 );
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.match_proposals TO authenticated;
 
 -- ==========================================
 -- 3. MATCHES & RESULTS
@@ -66,6 +68,7 @@ create table public.matches (
 
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.matches TO authenticated;
 
 -- ==========================================
 -- 4. FRIENDSHIPS
@@ -81,6 +84,7 @@ create table public.friendships (
   -- Prevent users from friending themselves
   check (requester_id != addressee_id)
 );
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.friendships TO authenticated;
 
 -- ==========================================
 -- 5. THREADS (Conversations)
@@ -91,6 +95,7 @@ create table public.threads (
   match_id uuid references public.matches(id) on delete cascade,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.threads TO authenticated;
 
 -- Links profiles to threads to easily query "My Conversations"
 create table public.thread_participants (
@@ -99,6 +104,7 @@ create table public.thread_participants (
   joined_at timestamp with time zone default timezone('utc'::text, now()) not null,
   primary key (thread_id, profile_id)
 );
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.thread_participants TO authenticated;
 
 -- ==========================================
 -- 6. MESSAGES
@@ -110,6 +116,7 @@ create table public.messages (
   content text not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.messages TO authenticated;
 
 -- ==========================================
 -- 7. (FUNCTION) BROWSE_MATCH_PROPOSALS
