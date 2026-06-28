@@ -1,16 +1,71 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
-    import { tick } from "svelte";
+    import { tick, untrack } from "svelte";
 
     let { data, form } = $props();
+
+    interface Message {
+        id: any;
+        content: any;
+        created_at: any;
+        sender_id: any;
+        profiles: {
+            username: any;
+        }[];
+    }
 
     let chatContainer: HTMLElement;
     let isSending = $state(false);
     let inputValue = $state("");
 
-    // Auto-scroll to bottom whenever data.messages changes
+    // 1. Create a local state for the UI to read from
+    let messages: Message[] = $state((() => data.messages)() || []);
+
+    // 2. Sync local state whenever SvelteKit fetches new data via `update()`
     $effect(() => {
-        if (data.messages && chatContainer) {
+        messages = data.messages || [];
+    });
+
+    // 3. Extract the primitive ID so we don't track the entire `data` object
+    let threadId = $derived(data.thread?.id);
+
+    // 4. Supabase Realtime Subscription
+    $effect(() => {
+        if (!data.supabase || !threadId) return;
+
+        // untrack() prevents the effect from re-running if the supabase object reference changes
+        const supabase = untrack(() => data.supabase);
+
+        const channel = supabase
+            .channel(`thread-${threadId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'messages',
+                    filter: `thread_id=eq.${threadId}`
+                },
+                (payload) => {
+                    console.log("Realtime Payload Received:", payload);
+                    const newMessage = payload.new as Message;
+                    
+                    const exists = messages.some((m) => m.id === newMessage.id);
+                    if (!exists) {
+                        messages = [...messages, newMessage];
+                    }
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    });
+
+    // 5. Auto-scroll bound to our local `messages` state
+    $effect(() => {
+        if (messages.length && chatContainer) {
             tick().then(() => {
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             });
@@ -79,7 +134,7 @@
         bind:this={chatContainer}
         class="flex-1 overflow-y-auto p-6 space-y-6"
     >
-        {#if data.messages.length === 0}
+        {#if messages.length === 0}
             <div
                 class="h-full flex flex-col items-center justify-center text-gray-500"
             >
@@ -88,7 +143,7 @@
                 </p>
             </div>
         {:else}
-            {#each data.messages as msg (msg.id)}
+            {#each messages as msg (msg.id)}
                 {@const isMe = msg.sender_id === data.userId}
                 <div class="flex flex-col {isMe ? 'items-end' : 'items-start'}">
                     <div

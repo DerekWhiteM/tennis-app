@@ -117,6 +117,7 @@ create table public.messages (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.messages TO authenticated;
+alter publication supabase_realtime add table public.messages;
 
 -- ==========================================
 -- 7. (FUNCTION) BROWSE_MATCH_PROPOSALS
