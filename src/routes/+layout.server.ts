@@ -8,8 +8,12 @@ export const load: LayoutServerLoad = async ({
 }) => {
     const { session, user } = await safeGetSession();
 
+    // Send to /login if not logged in
     if (!session || !user) {
-        throw redirect(303, "/login");
+        if (url.pathname !== "/login") {
+            throw redirect(303, "/login");
+        }
+        return {};
     }
 
     // Fetch the user's profile data
