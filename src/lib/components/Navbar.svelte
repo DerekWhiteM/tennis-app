@@ -3,31 +3,31 @@
 </script>
 
 <div
-    class="bg-white shadow-sm border rounded-xl border-gray-200 p-6 mb-8 flex items-center justify-between"
+    class="bg-gray-950 shadow-sm border-b border-gray-200 p-6 flex items-center justify-between"
 >
-    <h1 class="text-3xl font-extrabold text-gray-900">Rally</h1>
+    <h1 class="text-3xl font-extrabold text-gray-200">Rally</h1>
     <div class="flex items-center gap-4">
         <a
             href="/dashboard"
-            class="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
+            class="text-sm font-medium text-gray-200 hover:text-gray-400 transition-colors"
         >
             Schedule
         </a>
         <a
             href="/proposals"
-            class="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
+            class="text-sm font-medium text-gray-200 hover:text-gray-400 transition-colors"
         >
             Proposals
         </a>
         <a
             href="/threads"
-            class="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
+            class="text-sm font-medium text-gray-200 hover:text-gray-400 transition-colors"
         >
             Threads
         </a>
         <a
             href="/profile"
-            class="text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
+            class="text-sm font-medium text-gray-200 hover:text-gray-400 transition-colors"
         >
             Profile
         </a>
