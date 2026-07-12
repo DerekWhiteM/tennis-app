@@ -46,6 +46,10 @@
         isModalOpen = false;
         handleSearch();
     }
+
+    const labelClasses = "text-gray-200 mb-2";
+    const inputClasses = "w-full bg-gray-950 rounded-md border-gray-400 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm text-gray-400 hover:text-gray-200";
+    const tableHeaderClasses = "p-6 text-left text-xs font-semibold uppercase tracking-wide text-gray-400";
 </script>
 
 {#if isModalOpen}
@@ -126,21 +130,19 @@
         onsubmit={handleSearch}
         class="border-r border-gray-100 pr-6 mb-6 lg:col-span-3 lg:sticky lg:top-6"
     >
-        <div class="py-6">
-            <h2 class="text-md text-gray-200 mb-2">Location</h2>
+        <div class="my-6">
+            <div class={labelClasses}>Location</div>
             <button
                 type="button"
                 onclick={() => (isModalOpen = true)}
-                class="text-left text-emerald-600 hover:text-emerald-700 font-medium text-sm flex items-center gap-1 hover:underline w-full"
+                class="w-full rounded-md border border-gray-400 bg-gray-950 px-3 py-2 text-left text-sm text-gray-400 shadow-sm transition-colors hover:text-gray-200"
             >
                 {locationName} · Within {radiusMiles} mi
             </button>
         </div>
 
-        <hr class="border-gray-100 mb-6" />
-
-        <div>
-            <h3 class="text-sm font-medium text-gray-200 mb-2">Date Range</h3>
+        <div class="my-6">
+            <div class={labelClasses}>Date Range</div>
             <div class="space-y-3">
                 <div>
                     <label for="startDate" class="sr-only">Start Date</label>
@@ -148,7 +150,7 @@
                         type="date"
                         id="startDate"
                         bind:value={startDate}
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm text-gray-600"
+                        class={inputClasses}
                     />
                 </div>
                 <div>
@@ -157,20 +159,18 @@
                         type="date"
                         id="endDate"
                         bind:value={endDate}
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm text-gray-600"
+                        class={inputClasses}
                     />
                 </div>
             </div>
         </div>
 
-        <hr class="border-gray-100 my-6" />
-
-        <div class="mb-6">
-            <label for="gender" class="block text-sm font-medium text-gray-200 mb-1">Gender</label>
+        <div class="my-6">
+            <label for="gender" class={labelClasses}>Gender</label>
             <select
                 id="gender"
                 bind:value={gender}
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm"
+                class={inputClasses}
             >
                 <option value="all">Any</option>
                 <option value="male">Male</option>
@@ -178,15 +178,15 @@
             </select>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="grid grid-cols-2 gap-3 my-6">
             <div>
-                <label for="minNtrp" class="block text-sm font-medium text-gray-200 mb-1"
+                <label for="minNtrp" class={labelClasses}
                     >Min NTRP</label
                 >
                 <select
                     id="minNtrp"
                     bind:value={minNtrp}
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm"
+                    class={inputClasses}
                 >
                     <option value="1.0">1.0</option>
                     <option value="1.5">1.5</option>
@@ -204,13 +204,13 @@
                 </select>
             </div>
             <div>
-                <label for="maxNtrp" class="block text-sm font-medium text-gray-200 mb-1"
+                <label for="maxNtrp" class={labelClasses}
                     >Max NTRP</label
                 >
                 <select
                     id="maxNtrp"
                     bind:value={maxNtrp}
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm"
+                    class={inputClasses}
                 >
                     <option value="1.0">1.0</option>
                     <option value="1.5">1.5</option>
@@ -237,7 +237,7 @@
         </button>
     </form>
 
-    <div class="lg:col-span-9 space-y-4 pl-6 pt-6">
+    <div class="lg:col-span-9 space-y-4">
         {#if data.proposals.length === 0}
             <div
                 class="py-12 flex flex-col items-center justify-between"
@@ -264,95 +264,74 @@
                 </p>
             </div>
         {:else}
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {#each data.proposals as prop (prop.id)}
-                    <div
-                        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between hover:border-emerald-300 hover:shadow-md transition-all"
-                    >
-                        <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <div>
-                                    <h3
-                                        class="font-bold text-gray-900 text-lg truncate pr-2"
-                                        title={prop.creator_username || "Anonymous Player"}
-                                    >
+            <div class="overflow-hidden border-gray-200 shadow-sm">
+                <table class="w-full divide-y divide-gray-200">
+                    <thead class="">
+                        <tr>
+                            <th class={tableHeaderClasses}>
+                                Player
+                            </th>
+                            <th class={tableHeaderClasses}>
+                                Match Time
+                            </th>
+                            <th class={tableHeaderClasses}>
+                                Format
+                            </th>
+                            <th class={tableHeaderClasses}>
+                                Distance
+                            </th>
+                            <th class="px-4 py-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {#each data.proposals as prop (prop.id)}
+                            <tr class="hover:bg-gray-900">
+                                <td class="p-6 whitespace-nowrap">
+                                    <div class="text-sm font-semibold text-gray-200 truncate">
                                         {prop.creator_username || "Anonymous Player"}
-                                    </h3>
-                                    <div class="flex gap-2 mt-1">
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200"
-                                        >
-                                            NTRP {prop.creator_ntrp || "N/A"}
-                                        </span>
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-800 border border-blue-100"
-                                        >
-                                            📈 {prop.creator_elo} Elo
-                                        </span>
                                     </div>
-                                </div>
-                                <span
-                                    class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full whitespace-nowrap"
-                                >
+                                    <div class="text-xs text-gray-400 mt-1">
+                                        NTRP {prop.creator_ntrp || "N/A"} · {prop.creator_elo} Elo
+                                    </div>
+                                </td>
+                                <td class="p-6 whitespace-nowrap text-sm text-gray-200">
+                                    {new Date(prop.proposed_time).toLocaleString([], {
+                                        weekday: "short",
+                                        month: "short",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    })}
+                                </td>
+                                <td class="p-6 whitespace-nowrap text-sm text-gray-200 capitalize">
+                                    {prop.match_format.replace(/_/g, " ")}
+                                </td>
+                                <td class="p-6 whitespace-nowrap text-sm text-gray-200">
                                     {(prop.distance_meters / 1609.34).toFixed(1)} mi
-                                </span>
-                            </div>
-
-                            <hr class="border-gray-100 my-4" />
-
-                            <div class="space-y-2.5 text-sm text-gray-600">
-                                <p class="flex items-center gap-2">
-                                    <span class="text-gray-400">📅</span>
-                                    <span class="font-medium text-gray-900">
-                                        {new Date(prop.proposed_time).toLocaleString([], {
-                                            weekday: "short",
-                                            month: "short",
-                                            day: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                        })}
-                                    </span>
-                                </p>
-                                <p class="flex items-center gap-2">
-                                    <span class="text-gray-400">🎾</span>
-                                    Format:
-                                    <span class="capitalize font-medium text-gray-900"
-                                        >{prop.match_format.replace(/_/g, " ")}</span
+                                </td>
+                                <td class="p-6 whitespace-nowrap text-right">
+                                    <form
+                                        method="POST"
+                                        action="?/accept"
+                                        use:enhance={() => {
+                                            return async ({ update }) => {
+                                                await update();
+                                            };
+                                        }}
                                     >
-                                </p>
-                                <p class="flex items-center gap-2">
-                                    <span class="text-gray-400">🎯</span>
-                                    Seeking:
-                                    <span class="font-medium text-gray-900"
-                                        >NTRP {prop.min_ntrp} - {prop.max_ntrp}
-                                        ({prop.target_gender})</span
-                                    >
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="mt-6">
-                            <form
-                                method="POST"
-                                action="?/accept"
-                                use:enhance={() => {
-                                    // You can set a loading state here if you'd like
-                                    return async ({ update }) => {
-                                        await update();
-                                    };
-                                }}
-                            >
-                                <input type="hidden" name="proposal_id" value={prop.id} />
-                                <button
-                                    type="submit"
-                                    class="w-full text-center bg-gray-900 hover:bg-emerald-600 text-white font-medium text-sm py-2 px-4 rounded-md transition-colors shadow-sm"
-                                >
-                                    Accept Proposal
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                {/each}
+                                        <input type="hidden" name="proposal_id" value={prop.id} />
+                                        <button
+                                            type="submit"
+                                            class="cursor-pointer inline-flex items-center rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
+                                        >
+                                            Accept
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {/each}
+                    </tbody>
+                </table>
             </div>
         {/if}
     </div>
