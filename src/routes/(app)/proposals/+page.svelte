@@ -20,6 +20,14 @@
     let locationName = $state("Charlotte, NC");
     let isModalOpen = $state(false);
 
+    let isAcceptModalOpen = $state(false);
+    let selectedProposal = $state<any>(null);
+
+    function openAcceptModal(prop: any) {
+        selectedProposal = prop;
+        isAcceptModalOpen = true;
+    }
+
     function handleSearch(e?: Event) {
         if (e) e.preventDefault();
         const radiusMeters = Math.round(radiusMiles * 1609.34);
@@ -51,6 +59,77 @@
     const inputClasses = "w-full bg-gray-950 rounded-md border-gray-400 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm text-gray-400 hover:text-gray-200";
     const tableHeaderClasses = "p-6 text-left text-xs font-semibold uppercase tracking-wide text-gray-400";
 </script>
+
+{#if isAcceptModalOpen && selectedProposal}
+    <div
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+    >
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div
+                class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50"
+            >
+                <h2 class="text-lg font-bold text-gray-900">Confirm Match</h2>
+                <button
+                    onclick={() => (isAcceptModalOpen = false)}
+                    class="text-gray-400 hover:text-gray-600 bg-gray-200 hover:bg-gray-300 rounded-full p-1.5 transition-colors"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        ></path></svg
+                    >
+                </button>
+            </div>
+
+            <div class="p-6">
+                <p class="text-gray-600">
+                    Are you sure you want to accept this match with <span class="font-bold text-gray-900">{selectedProposal.creator_username || "Anonymous Player"}</span>?
+                </p>
+                <div class="mt-4 p-3 bg-gray-50 rounded-md text-sm text-gray-700 space-y-1 border border-gray-100">
+                    <p><span class="font-semibold text-gray-900">Time:</span> {new Date(selectedProposal.proposed_time).toLocaleString([], {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })}</p>
+                    <p><span class="font-semibold text-gray-900">Format:</span> <span class="capitalize">{selectedProposal.match_format.replace(/_/g, " ")}</span></p>
+                    <p><span class="font-semibold text-gray-900">NTRP:</span> {selectedProposal.creator_ntrp || "N/A"}</p>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
+                <button
+                    onclick={() => (isAcceptModalOpen = false)}
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                >
+                    Cancel
+                </button>
+                <form
+                    method="POST"
+                    action="?/accept"
+                    use:enhance={() => {
+                        return async ({ update }) => {
+                            isAcceptModalOpen = false;
+                            await update();
+                        };
+                    }}
+                >
+                    <input type="hidden" name="proposal_id" value={selectedProposal.id} />
+                    <button
+                        type="submit"
+                        class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 border border-transparent rounded-md hover:bg-emerald-700 transition-colors shadow-sm"
+                    >
+                        Confirm Acceptance
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{/if}
 
 {#if isModalOpen}
     <div
@@ -231,9 +310,9 @@
 
         <button
             type="submit"
-            class="w-full bg-emerald-600 hover:bg-emerald-700 text-gray-200 rounded-md py-2 text-sm font-medium transition-colors"
+            class="w-full cursor-pointer hover:bg-green-900 bg-green-800 text-gray-200 rounded-md py-2 font-medium transition-colors"
         >
-            Filter Results
+            Search
         </button>
     </form>
 
@@ -280,12 +359,14 @@
                             <th class={tableHeaderClasses}>
                                 Distance
                             </th>
-                            <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         {#each data.proposals as prop (prop.id)}
-                            <tr class="hover:bg-gray-900">
+                            <tr 
+                                class="hover:bg-green-900 cursor-pointer transition-colors"
+                                onclick={() => openAcceptModal(prop)}
+                            >
                                 <td class="p-6 whitespace-nowrap">
                                     <div class="text-sm font-semibold text-gray-200 truncate">
                                         {prop.creator_username || "Anonymous Player"}
@@ -308,25 +389,6 @@
                                 </td>
                                 <td class="p-6 whitespace-nowrap text-sm text-gray-200">
                                     {(prop.distance_meters / 1609.34).toFixed(1)} mi
-                                </td>
-                                <td class="p-6 whitespace-nowrap text-right">
-                                    <form
-                                        method="POST"
-                                        action="?/accept"
-                                        use:enhance={() => {
-                                            return async ({ update }) => {
-                                                await update();
-                                            };
-                                        }}
-                                    >
-                                        <input type="hidden" name="proposal_id" value={prop.id} />
-                                        <button
-                                            type="submit"
-                                            class="cursor-pointer inline-flex items-center rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
-                                        >
-                                            Accept
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         {/each}
