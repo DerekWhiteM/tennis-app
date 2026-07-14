@@ -171,7 +171,7 @@
             <!-- Submit -->
             <div class="pt-4 flex justify-end">
                 <a
-                    href="/dashboard"
+                    href="/schedule"
                     class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
                 >
                     Cancel

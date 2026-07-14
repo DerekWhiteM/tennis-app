@@ -29,7 +29,7 @@
 </script>
 
 <div class="max-w-4xl mx-auto space-y-6">
-    <a href="/matches" class="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-500">
+    <a href="/results" class="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-500">
         &larr; Back to Matches
     </a>
 

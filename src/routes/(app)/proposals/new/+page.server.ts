@@ -48,6 +48,6 @@ export const actions: Actions = {
       return fail(500, { error: 'Failed to create match proposal.' });
     }
 
-    throw redirect(303, '/dashboard');
+    throw redirect(303, '/schedule');
   }
 };

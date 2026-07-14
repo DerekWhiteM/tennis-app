@@ -29,6 +29,6 @@ export const actions: Actions = {
         }
 
         // Success! Redirect to dashboard
-        throw redirect(303, "/dashboard");
+        throw redirect(303, "/schedule");
     },
 };

@@ -1,44 +1,57 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
+    const navItemClasses = "text-gray-400 hover:text-gray-200";
 </script>
 
 <div
-    class="bg-gray-950 shadow-sm border-b border-gray-200 p-6 flex items-center justify-between"
+    class="border-b border-gray-200 p-6 flex items-center justify-between"
 >
-    <h1 class="text-3xl font-extrabold text-gray-200">Rally</h1>
+    <h1 class="text-3xl font-extrabold text-gray-200">
+        Rally
+    </h1>
     <div class="flex items-center gap-4">
         <a
-            href="/dashboard"
-            class="text-sm font-medium text-gray-200 hover:text-gray-400 transition-colors"
+            href="/browse"
+            class={navItemClasses}
         >
-            Schedule
+            Browse
+        </a>
+        <a
+            href="/messages"
+            class={navItemClasses}
+        >
+            Messages
+        </a>
+        <a
+            href="/profile"
+            class={navItemClasses}
+        >
+            Profile
         </a>
         <a
             href="/proposals"
-            class="text-sm font-medium text-gray-200 hover:text-gray-400 transition-colors"
+            class={navItemClasses}
         >
             Proposals
         </a>
         <a
-            href="/threads"
-            class="text-sm font-medium text-gray-200 hover:text-gray-400 transition-colors"
+            href="/results"
+            class={navItemClasses}
         >
-            Threads
+            Results
         </a>
         <a
-            href="/profile"
-            class="text-sm font-medium text-gray-200 hover:text-gray-400 transition-colors"
+            href="/schedule"
+            class={navItemClasses}
         >
-            Profile
+            Schedule
         </a>
-
-        <!-- Logout Form -->
         <form method="POST" action="/auth?/logout" use:enhance>
             <button
                 type="submit"
-                class="cursor-pointer px-4 py-2 rounded-md shadow-sm text-sm font-medium text-gray-200 bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
+                class="px-4 py-2 rounded-md text-gray-200 hover:text-gray-300 bg-red-800 hover:bg-red-900"
             >
-                Log Out
+                Logout
             </button>
         </form>
     </div>

@@ -5,7 +5,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     const code = url.searchParams.get("code");
     // You can pass a 'next' parameter if you want to redirect them somewhere specific,
     // otherwise we default to the dashboard.
-    const next = url.searchParams.get("next") ?? "/dashboard";
+    const next = url.searchParams.get("next") ?? "/schedule";
 
     if (code) {
         // Trade the code for a secure session!

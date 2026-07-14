@@ -24,7 +24,7 @@ export const actions = {
         }
 
         // Redirect the player to the matchmaking dashboard upon success
-        throw redirect(303, "/dashboard");
+        throw redirect(303, "/schedule");
     },
 
     signup: async ({ request, url, locals: { supabase } }) => {

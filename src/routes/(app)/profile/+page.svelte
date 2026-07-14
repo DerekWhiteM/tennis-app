@@ -146,7 +146,7 @@
                 class="pt-4 flex items-center justify-end gap-3 border-t border-gray-100"
             >
                 <a
-                    href="/dashboard"
+                    href="/schedule"
                     class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
                 >
                     Cancel

@@ -29,7 +29,7 @@
                         )}
                         <li>
                             <a
-                                href={`/threads/${thread.id}`}
+                                href={`/messages/${thread.id}`}
                                 class="block p-4 transition-colors hover:bg-gray-100 {isActive
                                     ? 'bg-emerald-50 border-l-4 border-emerald-500'
                                     : 'border-l-4 border-transparent'}"

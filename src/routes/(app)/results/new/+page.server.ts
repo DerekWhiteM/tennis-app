@@ -64,6 +64,6 @@ export const actions: Actions = {
             return fail(500, { error: 'Failed to submit match result' });
         }
 
-        throw redirect(303, '/matches');
+        throw redirect(303, '/results');
     }
 };

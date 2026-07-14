@@ -22,12 +22,12 @@
 <div>
     <!-- Dashboard Header -->
     <div
-        class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 mb-6 gap-4"
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 mb-6 gap-4 border-b border-gray-200"
     >
         <div>
-            <h1 class="text-3xl font-extrabold text-gray-200">My Schedule</h1>
-            <p class="mt-2 text-sm text-gray-200">
-                Welcome to the court, <span class="font-semibold text-gray-400"
+            <h1 class="text-2xl font-semibold text-gray-200">Schedule</h1>
+            <p class="mt-2 text-sm text-gray-400">
+                Welcome to the court, <span class="font-semibold"
                     >{data.session?.user?.email}</span
                 >!
             </p>

@@ -33,7 +33,7 @@ export const load: LayoutServerLoad = async ({
 
     // If they try to go back to onboarding after completing it, send them away
     if (!needsOnboarding && url.pathname === "/onboarding") {
-        throw redirect(303, "/dashboard");
+        throw redirect(303, "/schedule");
     }
 
     return {

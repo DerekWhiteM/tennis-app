@@ -22,7 +22,7 @@
             <p class="mt-2 text-sm text-gray-600">Review pending scores and view your history.</p>
         </div>
         <a 
-            href="/matches/new" 
+            href="/results/new" 
             class="inline-flex justify-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
         >
             + Report Score
@@ -44,7 +44,7 @@
                             <span class="text-sm font-medium text-gray-900">{opponent.username} reported a score</span>
                         </div>
                         <p class="text-xs text-gray-500 mb-4">{new Date(match.match_time).toLocaleDateString()}</p>
-                        <a href={`/matches/${match.id}`} class="text-sm font-semibold text-red-600 hover:text-red-700">
+                        <a href={`/results/${match.id}`} class="text-sm font-semibold text-red-600 hover:text-red-700">
                             Review & Verify &rarr;
                         </a>
                     </div>
