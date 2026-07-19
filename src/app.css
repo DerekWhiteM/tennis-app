@@ -1,3 +1,69 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Brand */
+  --color-primary: var(--color-green-600);
+  --color-primary-hover: var(--color-green-700);
+  --color-secondary: /* TODO */;
+  --color-accent: /* TODO */;
+
+  /* Background */
+  --color-background: var(--color-gray-50);
+  --color-surface: /* TODO */;
+  --color-surface-hover: /* TODO */;
+  --color-elevated: /* TODO */;
+
+  /* Text */
+  --color-foreground: var(--color-gray-950);
+  --color-muted: /* TODO */;
+  --color-subtle: /* TODO */;
+  --color-on-primary: /* TODO */;
+
+  /* Border */
+  --color-border-subtle: /* TODO */;
+  --color-border-strong: /* TODO */;
+  --color-border-focus: /* TODO */;
+
+  /* Semantic */
+  --color-success: /* TODO */;
+  --color-warning: /* TODO */;
+  --color-danger: /* TODO */;
+  --color-info: /* TODO */;
+}
+
+@layer theme {
+  .dark {
+    /* Brand Colors */
+    --color-primary: var(--color-green-800);
+    --color-primary-hover: var(--color-green-900);
+    --color-secondary: /* TODO */;
+    --color-accent: /* TODO */;
+
+    /* Backgrounds & Surfaces */
+    --color-background: var(--color-gray-950);
+    --color-surface: /* TODO */;
+    --color-surface-hover: /* TODO */;
+    --color-elevated: /* TODO */;
+
+    /* Text */
+    --color-foreground: var(--color-gray-50);
+    --color-muted: /* TODO */;
+    --color-subtle: /* TODO */;
+    --color-on-primary: /* TODO */;
+
+    /* Border */
+    --color-border-subtle: /* TODO */;
+    --color-border-strong: /* TODO */;
+    --color-border-focus: /* TODO */;
+
+    /* Semantic */
+    --color-success: /* TODO */;
+    --color-warning: /* TODO */;
+    --color-danger: /* TODO */;
+    --color-info: /* TODO */;
+  }
+}
